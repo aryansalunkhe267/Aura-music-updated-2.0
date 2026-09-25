@@ -23,18 +23,20 @@ jobs:
       - name: Unzip Project
         run: unzip "Aura music main updated.zip" -d app_source
           
-      - name: Generate Missing Gradle Wrapper & Build
+      - name: Generate Keystore, Wrapper & Build
         run: |
-          # Go directly into the unzipped folder
           cd app_source
           
-          # Force the system to generate a brand new gradlew file 
+          # 1. Generate a generic debug keystore using Java's keytool
+          keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+          
+          # 2. Force the system to generate a brand new gradlew file 
           gradle wrapper
           
-          # Make the new wrapper executable
+          # 3. Make the new wrapper executable
           chmod +x ./gradlew
           
-          # Build the APK using the new wrapper
+          # 4. Build the APK 
           ./gradlew assembleDebug
 
       - name: Upload APK
